@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Мои заказы{% endblock %}
+{% block content %}
+<h1>Мои заказы</h1>
+{% for order in orders %}
+  <div class="card">
+    <div class="meta">Заказ #{{ order.id }} • {{ order.created_at|date:"d.m.Y H:i" }} • Сумма: {{ order.total }} ₽</div>
+    <ul>
+      {% for it in order.items.all %}
+        <li>
+          <strong>{{ it.book.title }}</strong> — {{ it.get_kind_display }} за {{ it.price }} ₽
+          {% if it.kind == 'rental' %}
+            <br><small>С {{ it.start_date|date:"d.m.Y" }} по {{ it.end_date|date:"d.m.Y" }} ({{ it.get_duration_display }})</small>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% empty %}
+  <p>У вас пока нет заказов.</p>
+{% endfor %}
+{% endblock %}

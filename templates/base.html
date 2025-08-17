@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Synergy Bookshop{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}">
+</head>
+<body>
+  <header class="container">
+    <nav class="navbar">
+      <a class="brand" href="{% url 'book_list' %}">Synergy Bookshop</a>
+      <div class="nav-links">
+        <a href="{% url 'book_list' %}">Каталог</a>
+        {% if user.is_staff %}<a href="{% url 'dashboard' %}">Админ-панель</a>{% endif %}
+      </div>
+      <div class="auth">
+        {% if user.is_authenticated %}
+          <a href="{% url 'my_orders' %}">Мои заказы</a>
+          <span>Привет, {{ user.username }}!</span>
+          <a href="{% url 'logout' %}">Выход</a>
+        {% else %}
+          <a href="{% url 'login' %}">Вход</a>
+          <a href="{% url 'signup' %}">Регистрация</a>
+        {% endif %}
+      </div>
+    </nav>
+    {% if messages %}
+    <ul class="messages">
+      {% for m in messages %}<li class="{{ m.tags }}">{{ m }}</li>{% endfor %}
+    </ul>
+    {% endif %}
+  </header>
+  <main class="container">
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="container footer">
+    <small>Учебный проект «Книжный магазин» · Django</small>
+  </footer>
+</body>
+</html>

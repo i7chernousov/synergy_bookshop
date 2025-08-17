@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block content %}
+<article class="card">
+  <h1>{{ book.title }}</h1>
+  <div class="meta">{{ book.author.name }} • {{ book.year }} • {{ book.category.name }}</div>
+  <p>{{ book.description|linebreaks }}</p>
+  <p>Статус: {{ book.get_status_display }}</p>
+  <p>Доступно сейчас: {{ book.units_available_now }}</p>
+  <div class="actions">
+    {% if book.can_be_purchased %}
+      <a class="btn" href="{% url 'buy_book' book.pk %}">Купить — {{ book.price_purchase }} ₽</a>
+    {% endif %}
+  </div>
+
+  <section id="rent">
+    <h3>Аренда</h3>
+    {% if book.can_be_rented %}
+      <form method="post" action="{% url 'rent_book' book.pk %}">{% csrf_token %}
+        {{ rental_form.as_p }}
+        <div class="meta">
+          <small>Тарифы: 2 недели — {{ book.price_rent_2w }} ₽ · 1 месяц — {{ book.price_rent_1m }} ₽ · 3 месяца — {{ book.price_rent_3m }} ₽</small>
+        </div>
+        <button class="btn">Арендовать</button>
+      </form>
+    {% else %}
+      <p>Книга временно недоступна для аренды.</p>
+    {% endif %}
+  </section>
+</article>
+{% endblock %}

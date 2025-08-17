@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}Админ-панель{% endblock %}
+{% block content %}
+<h1>Админ-панель (быстрый просмотр)</h1>
+<div class="grid-2">
+  <section class="card">
+    <h3>Ближайшие завершения аренды</h3>
+    <ul>
+      {% for it in upcoming %}
+        <li>{{ it.end_date|date:"d.m.Y" }} — {{ it.book.title }} ({{ it.order.user.username }})</li>
+      {% empty %}
+        <li>Нет активных аренд.</li>
+      {% endfor %}
+    </ul>
+  </section>
+  <section class="card">
+    <h3>Малый остаток</h3>
+    <ul>
+      {% for b in low_stock %}
+        <li>{{ b.title }} — доступно {{ b.units_available_now }} из {{ b.available_copies }}</li>
+      {% empty %}
+        <li>Нет книг с низким остатком.</li>
+      {% endfor %}
+    </ul>
+    <p><a class="btn" href="/admin/store/book/">Открыть книги в админке</a></p>
+  </section>
+</div>
+{% endblock %}

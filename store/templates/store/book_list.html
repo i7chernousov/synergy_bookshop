@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block title %}Каталог книг{% endblock %}
+{% block content %}
+<h1>Каталог</h1>
+
+<form method="get" class="filters">
+  <div>
+    <label>Категория</label>
+    <select name="category" onchange="this.form.submit()">
+      <option value="">Все</option>
+      {% for c in categories %}
+        <option value="{{ c.slug }}" {% if active_filters.category == c.slug %}selected{% endif %}>{{ c.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Автор</label>
+    <select name="author" onchange="this.form.submit()">
+      <option value="">Все</option>
+      {% for a in authors %}
+        <option value="{{ a.id }}" {% if active_filters.author == a.id|stringformat:'s' %}selected{% endif %}>{{ a.name }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div>
+    <label>Год</label>
+    <input type="number" name="year" value="{{ active_filters.year }}" placeholder="Напр. 1953" onblur="this.form.submit()"/>
+  </div>
+  <div>
+    <label>Сортировка</label>
+    <select name="sort" onchange="this.form.submit()">
+      <option value="">По названию</option>
+      <option value="category" {% if active_filters.sort == 'category' %}selected{% endif %}>По категории</option>
+      <option value="author" {% if active_filters.sort == 'author' %}selected{% endif %}>По автору</option>
+      <option value="year" {% if active_filters.sort == 'year' %}selected{% endif %}>По году</option>
+    </select>
+  </div>
+  {% if active_filters.category or active_filters.author or active_filters.year or active_filters.sort %}
+  <a class="btn" href="{% url 'book_list' %}">Сбросить</a>
+  {% endif %}
+</form>
+
+<ul class="grid">
+  {% for b in books %}
+  <li class="card">
+    <a href="{{ b.get_absolute_url }}"><h3>{{ b.title }}</h3></a>
+    <div class="meta">{{ b.author.name }} • {{ b.year }} • {{ b.category.name }}</div>
+    <div class="meta">Доступно сейчас: {{ b.units_available_now }}</div>
+    <div class="actions">
+      {% if b.can_be_purchased %}
+        <a class="btn" href="{% url 'buy_book' b.pk %}">Купить — {{ b.price_purchase }} ₽</a>
+      {% endif %}
+      {% if b.can_be_rented %}
+        <a class="btn" href="{% url 'book_detail' b.pk %}#rent">Аренда от {{ b.price_rent_2w }} ₽</a>
+      {% endif %}
+      {% if not b.can_be_purchased and not b.can_be_rented %}
+        <span class="badge">Недоступна</span>
+      {% endif %}
+    </div>
+  </li>
+  {% empty %}
+    <li>Книг не найдено.</li>
+  {% endfor %}
+</ul>
+{% endblock %}
